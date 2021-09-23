@@ -2,18 +2,18 @@ import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import {
-  sil,
+  sil2,
   giriş,
   belgeEkle,
-  artılarıEkleme,
-  sonEkleme,
+  artılarıEkleme2,
+  sonEkleme2,
   eklemeHatası,
-  belgeyiTemizle,
+  belgeyiTemizle2,
 } from "../actions";
-import Canvas from "./Canvas";
-import Deneme from "./Deneme";
+import Canvas2 from "./Canvas2";
+import Deneme2 from "./Deneme2";
 
-const DepoGiriş = (props) => {
+const Stokcikis = (props) => {
   const [belgeNo, setBelgeNo] = useState("");
   const [alınanŞirket, setAlınanŞirket] = useState("");
   const [satıcı, setSatıcı] = useState("");
@@ -21,24 +21,23 @@ const DepoGiriş = (props) => {
   const [açıklama, setAçıklama] = useState("");
   const [tarih, setTarih] = useState("");
 
-
-  var today = new Date();
-  var dd = today.getDate();
-  var mm = today.getMonth() + 1; //January is 0!
-  var yyyy = today.getFullYear();
-  if (dd < 10) {
-    dd = "0" + dd;
-  }
-  if (mm < 10) {
-    mm = "0" + mm;
-  }
-  today = yyyy + "-" + mm + "-" + dd;
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth() + 1; //January is 0!
+    var yyyy = today.getFullYear();
+    if (dd < 10) {
+      dd = "0" + dd;
+    }
+    if (mm < 10) {
+      mm = "0" + mm;
+    }
+    today = yyyy + "-" + mm + "-" + dd;
 
 
   return (
     <div>
       <br />
-      <h2>Satın Alma Belgesi Girişi</h2>
+      <h2>Satış Yapma Belgesi Girişi</h2>
       <div
         style={{
           margin: "20px",
@@ -81,7 +80,7 @@ const DepoGiriş = (props) => {
                 class="form-label d-inline"
                 style={{ text: "center" }}
               >
-                Ürünlerin Alındığı Şirket *
+                Ürünlerin Satıldığı Şirket *
               </label>
             </span>
             <span>
@@ -150,10 +149,6 @@ const DepoGiriş = (props) => {
               Alış Tarihi *
             </label>
             <input
-
-
-
-              min="1899-01-01"
               max={today}
               type="date"
               class="form-control exampleInputEmail1"
@@ -166,7 +161,7 @@ const DepoGiriş = (props) => {
             * işaretli olanlar doldurulması mecburi alanlardır
           </span>
         </form>
-        <Canvas />
+        <Canvas2 />
 
         <table className="table">
           <thead>
@@ -176,16 +171,17 @@ const DepoGiriş = (props) => {
               <th scope="col">Ürün</th>
               <th scope="col">Fotograf</th>
               <th scope="col">Sınıf</th>
-              <th scope="col">Alınan</th>
+              <th scope="col">Stokta</th>
+              <th scope="col">Satılan</th>
               <th scope="col">Birim</th>
             </tr>
           </thead>
           <tbody className="deneme2">
-            {props.mydata.alınıyor.map((item) => (
+            {props.mydata.satılıyor.map((item) => (
               <tr key={Math.random()}>
                 <th>
                   <svg
-                    onClick={() => props.sil(item.id)}
+                    onClick={() => props.sil2(item.id)}
                     style={{ cursor: "pointer" }}
                     color="red"
                     xmlns="http://www.w3.org/2000/svg"
@@ -205,7 +201,22 @@ const DepoGiriş = (props) => {
                 </td>
                 <td>{item.sınıf}</td>
                 <td>
-                  <Deneme props={props} item={item} />
+                  {
+                    props.mydata.data.find(
+                      (dataitem) => dataitem.id === item.id
+                    ).stok
+                  }
+                </td>
+                <td>
+                  <Deneme2
+                    props={props}
+                    item={item}
+                    sınır={
+                      props.mydata.data.find(
+                        (dataitem) => dataitem.id === item.id
+                      ).stok
+                    }
+                  />
                 </td>
                 <td>{item.birim}</td>
               </tr>
@@ -232,52 +243,61 @@ const DepoGiriş = (props) => {
             let boş = 0;
 
             const adım = () => {
-              for (let i = 1; i < props.mydata.alınıyor.length + 1; i++) {
+              for (let i = 1; i < props.mydata.satılıyor.length + 1; i++) {
                 if (
                   document.querySelector(
-                    `.deneme2 > tr:nth-child( ${i} ) > td:nth-child(6) > div > input`
+                    `.deneme2 > tr:nth-child( ${i} ) > td:nth-child(7) > div > input`
                   ).value === ""
                 ) {
                   alert(
-                    "lütfen eklediğiniz ürünlere ne kadar ekleme yapacaksanız yazınız"
+                    "lütfen eklediğiniz ürünlere ne kadar satış yapacaksanız yazınız"
                   );
                   boş = 1;
                   break;
                 }
-                if (
-                  document.querySelector(
-                    `.deneme2 > tr:nth-child( ${i} ) > td:nth-child(6) > div > input`
-                  ).value === "0"
-                ) {
-                  alert(
-                    "lütfen eklediğiniz ürünlere 0'dan yüksek bir sayı yazınız"
-                  );
-                  boş = 1;
-                  break;
-                }
+
+                if (document.querySelector(
+                    `.deneme2 > tr:nth-child( ${i} ) > td:nth-child(7) > div > input`
+                  ).value > document.querySelector(
+                    `.deneme2 > tr:nth-child( ${i} ) > td:nth-child(6)`
+                  ).innerHTML ) {
+                     alert(
+                       "Lütfen stogunuzdaki miktardan az giriş yapın"
+                     );
+                     boş = 1;
+                     break
+                  }
+
+                  if (document.querySelector(
+                    `.deneme2 > tr:nth-child( ${i} ) > td:nth-child(7) > div > input`
+                  ).value === "0" ) {
+                     alert(
+                       "Lütfen mikratı 0 olan ürünü çıkarın veya miktarı arttırın"
+                     );
+                     boş = 1;
+                     break
+                  }
               }
 
               if (boş === 1) {
                 boş = 0;
               } else {
-                let onay = window.confirm(
-                  "Satın Alma İşlemini Onaylıyor Musunuz ?"
-                );
+                let onay = window.confirm("Satış İşlemini Onaylıyor Musunuz ?");
 
                 if (onay == true) {
-                  for (let i = 1; i < props.mydata.alınıyor.length + 1; i++) {
-                    props.artılarıEkleme(
+                  for (let i = 1; i < props.mydata.satılıyor.length + 1; i++) {
+                    props.artılarıEkleme2(
                       enn,
                       document.querySelector(
                         `.deneme2 > tr:nth-child( ${i} ) > th:nth-child(2)`
                       ).innerHTML,
                       document.querySelector(
-                        `.deneme2 > tr:nth-child( ${i} ) > td:nth-child(6) > div > input`
+                        `.deneme2 > tr:nth-child( ${i} ) > td:nth-child(7) > div > input`
                       ).value
                     );
                   }
 
-                  props.sonEkleme(
+                  props.sonEkleme2(
                     enn,
                     alıcı,
                     alınanŞirket,
@@ -298,9 +318,9 @@ const DepoGiriş = (props) => {
             };
             let BelgeVarMı = 0;
 
-            props.mydata.yapılanAlışlar.find((alış) =>
+            props.mydata.yapılanSatışlar.find((alış) =>
               alış[0].belgeNo === belgeNo
-                ? props.mydata.yapılanAlışlar.find((alış) =>
+                ? props.mydata.yapılanSatışlar.find((alış) =>
                     alış[0].belgeNo === belgeNo
                       ? (BelgeVarMı = 1)
                       : console.log(BelgeVarMı)
@@ -338,7 +358,7 @@ const DepoGiriş = (props) => {
             setAçıklama("");
             setTarih("");
 
-            props.belgeyiTemizle();
+            props.belgeyiTemizle2();
           }}
         >
           {" "}
@@ -356,11 +376,11 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps, {
-  sil,
+  sil2,
   giriş,
   belgeEkle,
-  artılarıEkleme,
-  sonEkleme,
+  artılarıEkleme2,
+  sonEkleme2,
   eklemeHatası,
-  belgeyiTemizle,
-})(DepoGiriş);
+  belgeyiTemizle2,
+})(Stokcikis);

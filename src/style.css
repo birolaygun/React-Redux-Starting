@@ -8,9 +8,17 @@
 }
 
 .exampleInputEmail1 {
-  width: calc(90vw - 200px)
+  width: calc(90vw - 200px);
 }
 
-.yeniEkle{
+.yeniEkle {
   background-color: rgba(31, 27, 253, 0.938);
+}
+.linked {
+  text-decoration:none;
+  color:black;
+  text-align: center;
+  padding-top: 9px;
+  padding-bottom: 0px;
+  margin-bottom: 0px;
 }
